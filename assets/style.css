@@ -1,0 +1,94 @@
+/* Background and Text */
+body {
+    background-color: #ffffff; /* Dark gray background */
+    color: #404140; /* White text */
+}
+
+/* Headers */
+h1, h4 {
+    font-family: 'Arial', sans-serif;
+    color: #bd8e43; /* Golden header text */
+}
+
+/* Buttons */
+button {
+    background-color: #bd8e43; /* Golden buttons */
+    color: #404140; /* Dark text on buttons */
+    border: none;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #ffd07f; /* Lighter shade for hover */
+}
+
+/* Alerts */
+.alert-danger {
+    background-color: #bd8e43;
+    color: #404140;
+    border: none;
+}
+
+/* Tabs */
+.nav-tabs .nav-link.active {
+    background-color: #bd8e43;
+    color: #404140;
+    border: none;
+}
+
+.nav-tabs .nav-link {
+    color: #bd8e43;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #ffd07f;
+}
+
+/* Graph Containers */
+.graph-container {
+    border: 2px solid #bd8e43;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+/* Slider /*
+
+/* Customize the slider track (selected portion) */
+.rc-slider-track {
+    background-color: #bd8e43 !important; /* Golden color for the selected track */
+}
+
+/* Customize the slider handle (small draggable point) */
+.rc-slider-handle {
+    border: 2px solid #bd8e43 !important; /* Golden border */
+    background-color: #404140 !important; /* Dark gray fill */
+    width: 16px !important; /* Ensure visibility */
+    height: 16px !important; /* Ensure visibility */
+    box-shadow: none !important; /* Remove default blue shadow */
+}
+
+/* Hover effect for the handle */
+.rc-slider-handle:hover {
+    border-color: #ffd07f !important; /* Lighter golden border on hover */
+}
+
+/* Active state for the handle */
+.rc-slider-handle:active {
+    border-color: #ffd07f !important; /* Lighter golden border on active */
+    background-color: #404140 !important; /* Consistent background */
+}
+
+/* Customize the slider rail (unselected portion) */
+.rc-slider-rail {
+    background-color: #ffffff !important; /* Dark gray rail */
+}
+
+/* Customize the tooltip (confidence level value) */
+.rc-slider-tooltip {
+    background-color: #bd8e43 !important; /* Golden background */
+    color: #404140 !important; /* Dark gray text */
+    border: none !important;
+}
+}
