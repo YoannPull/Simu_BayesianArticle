@@ -1,3 +1,4 @@
+import os
 from dash import Dash
 from layout import create_layout
 from callbacks import register_callbacks
@@ -18,6 +19,9 @@ app.layout = create_layout()
 # Register the callbacks
 register_callbacks(app)
 
-# Run the server
+
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    # Render fournit le port dans la variable d'environnement `PORT`
+    port = int(os.environ.get("PORT", 8050))  # Par défaut 8050 si non spécifié
+    app.run_server(host="0.0.0.0", port=port)
+
