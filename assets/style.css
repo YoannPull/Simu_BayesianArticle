@@ -1,94 +1,79 @@
-/* Background and Text */
+/* General Body and Text Styling */
 body {
-    background-color: #ffffff; /* Dark gray background */
-    color: #404140; /* White text */
+    background-color: #ffffff; /* White background */
+    color: #404140; /* Dark gray text */
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: #bd8e43; /* Golden header */
+    color: #404140; /* Dark gray text */
+    border: none;
+    padding: 15px;
+}
+
+.navbar-brand, .nav-link {
+    color: #ffffff !important; /* White text for navbar links */
+}
+
+.nav-link:hover {
+    color: #ffd07f !important; /* Lighter golden hover for links */
 }
 
 /* Headers */
-h1, h4 {
-    font-family: 'Arial', sans-serif;
-    color: #bd8e43; /* Golden header text */
+h1, h2, h3, h4 {
+    color: #bd8e43; /* Golden headers */
 }
 
 /* Buttons */
-button {
+button, .btn {
     background-color: #bd8e43; /* Golden buttons */
-    color: #404140; /* Dark text on buttons */
+    color: #404140; /* Dark gray text on buttons */
     border: none;
     font-weight: bold;
     padding: 10px 20px;
     border-radius: 5px;
 }
 
-button:hover {
-    background-color: #ffd07f; /* Lighter shade for hover */
+button:hover, .btn:hover {
+    background-color: #ffd07f; /* Lighter golden hover */
 }
 
-/* Alerts */
-.alert-danger {
-    background-color: #bd8e43;
+/* Modal Styling */
+.modal-header {
+    background-color: #bd8e43; /* Golden header */
+    color: #ffffff; /* White text */
+}
+
+.modal-body {
+    background-color: #ffffff; /* White background */
+    color: #404140; /* Dark gray text */
+}
+
+/* Scenario Windows */
+.scenario-window {
+    background-color: #f5f5f5; /* Light gray background */
+    border: 2px solid #bd8e43; /* Golden border */
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px;
+}
+
+.scenario-window h4 {
     color: #404140;
-    border: none;
 }
 
-/* Tabs */
-.nav-tabs .nav-link.active {
+/* Footer */
+footer {
     background-color: #bd8e43;
-    color: #404140;
-    border: none;
-}
-
-.nav-tabs .nav-link {
-    color: #bd8e43;
-}
-
-.nav-tabs .nav-link:hover {
-    color: #ffd07f;
-}
-
-/* Graph Containers */
-.graph-container {
-    border: 2px solid #bd8e43;
-    border-radius: 5px;
+    color: #ffffff;
     padding: 10px;
-}
-
-/* Slider /*
-
-/* Customize the slider track (selected portion) */
-.rc-slider-track {
-    background-color: #bd8e43 !important; /* Golden color for the selected track */
-}
-
-/* Customize the slider handle (small draggable point) */
-.rc-slider-handle {
-    border: 2px solid #bd8e43 !important; /* Golden border */
-    background-color: #404140 !important; /* Dark gray fill */
-    width: 16px !important; /* Ensure visibility */
-    height: 16px !important; /* Ensure visibility */
-    box-shadow: none !important; /* Remove default blue shadow */
-}
-
-/* Hover effect for the handle */
-.rc-slider-handle:hover {
-    border-color: #ffd07f !important; /* Lighter golden border on hover */
-}
-
-/* Active state for the handle */
-.rc-slider-handle:active {
-    border-color: #ffd07f !important; /* Lighter golden border on active */
-    background-color: #404140 !important; /* Consistent background */
-}
-
-/* Customize the slider rail (unselected portion) */
-.rc-slider-rail {
-    background-color: #ffffff !important; /* Dark gray rail */
-}
-
-/* Customize the tooltip (confidence level value) */
-.rc-slider-tooltip {
-    background-color: #bd8e43 !important; /* Golden background */
-    color: #404140 !important; /* Dark gray text */
-    border: none !important;
-}
+    text-align: center;
+    font-size: 14px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
 }

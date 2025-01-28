@@ -1,8 +1,7 @@
-import json
+import os
 from utils.plotter import generate_dash_plots
-import numpy as np
 
-# Define scenarios the different scenarios based on the articles
+# Define scenarios
 scenarios = [
     {"n": 1000, "p": 0.01, "confidence_level": 0.95, "scenario_name": "baseline 1"},
     {"n": 1000, "p": 0.05, "confidence_level": 0.95, "scenario_name": "baseline 2"},
@@ -15,41 +14,15 @@ scenarios = [
     {"n": 500_000, "p": 0.01, "confidence_level": 0.95, "scenario_name": "large sample 3"},
 ]
 
-# Precompute results
-def convert_to_serializable(obj):
-    """Recursively convert numpy objects to native Python types."""
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-    if isinstance(obj, np.generic):
-        return obj.item()
-    if isinstance(obj, dict):
-        return {k: convert_to_serializable(v) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [convert_to_serializable(v) for v in obj]
-    return obj
+# Create directory for JPEG files
+# os.makedirs("plots", exist_ok=True)
 
-precomputed_results = {}
+# Generate and save plots
 for scenario in scenarios:
-    n = scenario["n"]
-    p = scenario["p"]
-    confidence = scenario["confidence_level"]
-    name = scenario["scenario_name"]
-
-    # Generate plots
+    n, p, confidence, name = scenario["n"], scenario["p"], scenario["confidence_level"], scenario["scenario_name"]
     fig_normal, fig_exact, fig_bayesian = generate_dash_plots(n, p, confidence)
 
-    # Convert figures to JSON and ensure they're serializable
-    precomputed_results[name] = {
-        "n": n,
-        "p": p,
-        "confidence_level": confidence,
-        "normal_plot": convert_to_serializable(fig_normal.to_plotly_json()),
-        "exact_plot": convert_to_serializable(fig_exact.to_plotly_json()),
-        "bayesian_plot": convert_to_serializable(fig_bayesian.to_plotly_json()),
-    }
-
-# Save to JSON file
-with open("precomputed_results.json", "w") as f:
-    json.dump(precomputed_results, f)
-
-print("Precomputed results saved successfully to 'precomputed_results.json'.")
+    # Save each plot as a JPEG file
+    fig_normal.write_image(f"assets/plots/{name}_normal.jpeg", format="jpeg", width=800, height=600)
+    fig_exact.write_image(f"assets/plots/{name}_exact.jpeg", format="jpeg", width=800, height=600)
+    fig_bayesian.write_image(f"assets/plots/{name}_bayesian.jpeg", format="jpeg", width=800, height=600)

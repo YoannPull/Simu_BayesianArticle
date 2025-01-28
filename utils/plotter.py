@@ -12,8 +12,8 @@ def generate_dash_plots(n, probability, confidence_level=0.95):
     p_hat_exact, ci_exact = exact_binom_distribution(n, probability, confidence_level)
     alpha_post, beta_post, ci_bayesian, hdr_bayesian = jeffreys_prior_posterior(n, probability, confidence_level)
 
-    x_normal = np.linspace(0, 1, n * 100)
-    x_beta = np.linspace(0, 1, n * 100)
+    x_normal = np.linspace(0, 1, n * 10)
+    x_beta = np.linspace(0, 1, n * 10)
 
     # Zoom range for plots
     zoom_lower = max(0, probability - 3 / np.sqrt(n))

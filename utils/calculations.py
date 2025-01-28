@@ -1,131 +1,143 @@
-# Density function
-import numpy as np
-from scipy.stats import norm, binom, beta
-from scipy.stats import beta
-from scipy.optimize import bisect
+from dash import Dash, html, dcc, Input, Output, State
+import dash_bootstrap_components as dbc
+import os
 
-import matplotlib.pyplot as plt
+# Initialize the app
+app = Dash(
+    __name__,
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+)
+app.title = "Confidence Interval Comparison"
 
+# Helper function to create a card for each scenario
+def create_scenario_card(scenario_name, image_path):
+    """Create a card for a scenario with its image."""
+    return dbc.Card(
+        dbc.CardBody([
+            html.H5(scenario_name, className="card-title text-center"),
+            html.Img(
+                src=image_path,
+                className="img-fluid scenario-image",
+                style={"cursor": "pointer"},
+                id=f"image-{scenario_name.replace(' ', '-')}",
+            ),
+        ]),
+        className="mb-4",
+    )
 
-def standardize_binomial_distribution(n, probability, confidence_level=0.95):
-    np.random.seed(42)
-    # Générer directement les succès pour tous les échantillons
-    binomial_samples = np.random.binomial(n=n, p=probability, size=1)
+# Layout for each section (Baseline, Low Default, Large Sample)
+def create_scenario_section(title, scenario_cards):
+    return html.Div([
+        html.H2(title, className="text-center my-4 text-primary"),
+        dbc.Row(
+            [dbc.Col(card, width=4) for card in scenario_cards],
+            className="g-4",
+        ),
+    ], className="mt-4")
 
-    # Calcul des statistiques
-    p_hat = binomial_samples[0] / n  # Under H0 : probability = p_hat
-    expected_mean = p_hat
-    standard_deviation = np.sqrt(p_hat * (1 - p_hat) / n)
+# Main Layout
+def create_layout():
+    # Read image files
+    image_dir = "assets/plots"
+    baseline_cards = []
+    low_default_cards = []
+    large_sample_cards = []
 
-    # Compute confidence interval for a two-tailed test
-    z_score = norm.ppf(1 - (1 - confidence_level) / 2)
-    margin_of_error = z_score * standard_deviation
-    confidence_interval = (expected_mean - margin_of_error, expected_mean + margin_of_error)
+    for image_file in os.listdir(image_dir):
+        if image_file.endswith(".jpeg"):
+            scenario_name = image_file.replace("_", " ").replace(".jpeg", "").title()
+            image_path = f"/{image_dir}/{image_file}"
 
-    return p_hat, confidence_interval
+            if "Baseline" in scenario_name:
+                baseline_cards.append(create_scenario_card(scenario_name, image_path))
+            elif "Low Default" in scenario_name:
+                low_default_cards.append(create_scenario_card(scenario_name, image_path))
+            elif "Large Sample" in scenario_name:
+                large_sample_cards.append(create_scenario_card(scenario_name, image_path))
 
+    return dbc.Container(
+        [
+            # Navbar
+            dbc.NavbarSimple(
+                brand="Confidence Interval Comparison",
+                brand_href="/",
+                color="primary",
+                dark=True,
+            ),
+            dcc.Location(id="url", refresh=False),
+            html.Div(id="page-content"),
+        ],
+        fluid=True,
+    )
 
-def exact_binom_distribution(n, probability, confidence_level=0.95):
-    np.random.seed(42)
-    # Générer une observation binomiale
-    binomial_sample = np.random.binomial(n=n, p=probability)
+# Welcome Page Layout
+def welcome_page():
+    return dbc.Container(
+        [
+            html.H1("Welcome to the Confidence Interval Comparison Tool", className="text-center my-4"),
+            html.P("Navigate through different scenarios to visualize confidence intervals.", className="text-center"),
+            dbc.Button("Explore Scenarios", href="/scenarios", color="primary", size="lg", className="d-block mx-auto"),
+        ],
+        fluid=True,
+        className="mt-5",
+    )
 
-    # Calcul de la proportion observée
-    p_hat = binomial_sample / n
+# Scenarios Page Layout
+def scenarios_page():
+    image_dir = "assets/plots"
+    baseline_cards = []
+    low_default_cards = []
+    large_sample_cards = []
 
-    # Calcul des bornes de l'intervalle de confiance exact basé sur p_hat
-    alpha = 1 - confidence_level
+    for image_file in os.listdir(image_dir):
+        if image_file.endswith(".jpeg"):
+            scenario_name = image_file.replace("_", " ").replace(".jpeg", "").title()
+            image_path = f"/{image_dir}/{image_file}"
 
-    # Déterminer les bornes inférieure et supérieure en termes de nombre de succès
-    lower_bound = binom.ppf(alpha / 2, n, p_hat) / n
-    upper_bound = binom.ppf(1 - alpha / 2, n, p_hat) / n
+            if "Baseline" in scenario_name:
+                baseline_cards.append(create_scenario_card(scenario_name, image_path))
+            elif "Low Default" in scenario_name:
+                low_default_cards.append(create_scenario_card(scenario_name, image_path))
+            elif "Large Sample" in scenario_name:
+                large_sample_cards.append(create_scenario_card(scenario_name, image_path))
 
-    confidence_interval = (lower_bound, upper_bound)
+    return dbc.Container(
+        [
+            create_scenario_section("Baseline Scenarios", baseline_cards),
+            create_scenario_section("Low Default Portfolio Scenarios", low_default_cards),
+            create_scenario_section("Large Sample Scenarios", large_sample_cards),
+            # Modal for larger image
+            dbc.Modal(
+                [
+                    dbc.ModalHeader(dbc.ModalTitle(id="modal-title")),
+                    dbc.ModalBody(html.Img(id="modal-image", className="img-fluid")),
+                ],
+                id="image-modal",
+                size="lg",
+            ),
+        ],
+        fluid=True,
+    )
 
-    return p_hat, confidence_interval
+# App Layout
+app.layout = create_layout()
 
+# Callback for page navigation
+@app.callback(
+    Output("page-content", "children"),
+    Input("url", "pathname"),
+)
+def display_page(pathname):
+    if pathname == "/scenarios":
+        return scenarios_page()
+    return welcome_page()
 
-def jeffreys_prior_posterior(n, probability, confidence_level=0.95):
-    np.random.seed(42)
-    """
-    Computes the posterior parameters, credibility interval, and HDR for a Beta distribution
-    with Jeffrey's prior and binomial observations.
-
-    Args:
-        n (int): Number of trials in the binomial distribution.
-        probability (float): True probability of success in the binomial distribution.
-        confidence_level (float): Confidence level for the intervals (default: 0.95).
-
-    Returns:
-        tuple: alpha_posterior, beta_posterior, credibility_interval, hdr_interval
-    """
-    # Generate a binomial sample
-    binomial_samples = np.random.binomial(n=n, p=probability, size=1)
-    nb_success = binomial_samples[0]
-
-    # Compute posterior parameters
-    alpha_prior = 0.5
-    beta_prior = 0.5
-
-    alpha_posterior = nb_success + alpha_prior
-    beta_posterior = n - nb_success + beta_prior
-
-    # Credibility interval
-    alpha = 1 - confidence_level
-    lower_bound = beta.ppf(alpha / 2, alpha_posterior, beta_posterior)
-    upper_bound = beta.ppf(1 - alpha / 2, alpha_posterior, beta_posterior)
-    credibility_interval = (lower_bound, upper_bound)
-
-    # High-Density Region (HDR)
-    def find_hdr(n, alpha_posterior, beta_posterior, confidence_level):
-        """
-        Computes the High-Density Region (HDR) for the Beta distribution.
-        Handles potential disjoint regions for multimodal distributions.
-
-        Args:
-            alpha_posterior (float): Posterior alpha parameter.
-            beta_posterior (float): Posterior beta parameter.
-            confidence_level (float): Desired probability mass in the HDR.
-
-        Returns:
-            tuple: Lower and upper bounds of the HDR.
-        """
-        # Generate x values and compute the density
-        x = np.linspace(0, 1, 100 * n)
-        density = beta.pdf(x, alpha_posterior, beta_posterior)
-
-        # Function to find the threshold
-        def hdr_threshold(threshold):
-            return np.trapz(density[density >= threshold], x[density >= threshold]) - confidence_level
-
-        # Find the threshold using bisection
-        threshold = bisect(hdr_threshold, 0, max(density), maxiter=10000)
-
-        # Identify HDR regions
-        hdr_regions = []
-        inside_region = False
-        for i in range(len(x)):
-            if density[i] >= threshold:
-                if not inside_region:
-                    start = x[i]
-                    inside_region = True
-            else:
-                if inside_region:
-                    end = x[i - 1]
-                    hdr_regions.append((start, end))
-                    inside_region = False
-        if inside_region:
-            hdr_regions.append((start, x[-1]))
-
-        return hdr_regions
-
-    hdr_regions = find_hdr(n, alpha_posterior, beta_posterior, confidence_level)
-
-    # Combine HDR regions into a single interval if unimodal
-    if len(hdr_regions) == 1:
-        hdr_interval = hdr_regions[0]
-    else:
-        # For multimodal, return the range of all HDR intervals
-        hdr_interval = (hdr_regions[0][0], hdr_regions[-1][1])
-
-    return alpha_posterior, beta_posterior, credibility_interval, hdr_interval
+# Callback for opening the modal
+@app.callback(
+    [Output("modal-title", "children"), Output("modal-image", "src"), Output("image-modal", "is_open")],
+    [Input({"type": "image", "index": ALL}, "n_clicks")],
+    [State({"type": "image", "index": ALL}, "id")],
+    prevent_initial_call=True,
+)
+def open_image_modal(n_clicks, ids):
+    ctx = dash.callback
